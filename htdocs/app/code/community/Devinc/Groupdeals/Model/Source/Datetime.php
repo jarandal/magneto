@@ -1,0 +1,4 @@
+<?php
+class Devinc_Groupdeals_Model_Source_Datetime extends Devinc_License_Model_Groupdeals_Source_Datetime
+{
+}

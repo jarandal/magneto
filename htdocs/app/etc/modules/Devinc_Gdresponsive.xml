@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <Devinc_Gdresponsive>
+            <active>true</active>
+            <codePool>community</codePool>
+            <depends>
+                <Devinc_Groupdeals/>
+                <Devinc_License/>
+            </depends>
+        </Devinc_Gdresponsive>
+    </modules>
+</config> 
