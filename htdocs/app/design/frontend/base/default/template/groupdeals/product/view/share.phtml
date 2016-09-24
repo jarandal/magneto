@@ -1,0 +1,35 @@
+<?php $_product = $this->getProduct(); ?>
+<div class="share-box" >
+    <div class="share-box-center" >
+        <b><?php echo $this->__('Share:') ?></b>
+        	
+        <?php if (Mage::getModel('groupdeals/facebook_config')->isEnabled() && Mage::getStoreConfigFlag('groupdeals/facebook_connect/enable_facebook_like')): ?>    
+        <div class="facebook">
+            <fb:share-button type="box_count"></fb:share-button>
+        </div>  
+        <?php endif; ?>
+        			
+        <div class="twitter">
+            <a href="https://twitter.com/share" class="twitter-share-button" data-count="vertical">Tweet</a><script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
+        </div>
+        
+        <div class="google">			
+            <script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
+            <g:plusone size="tall"></g:plusone>
+        </div>
+        
+        <div class="share-this">
+        	<?php if ($_product->getTypeId()!='bundle'): ?>
+    	    	<div class="addthis_toolbox addthis_default_style ">
+    	    		<a class="addthis_counter addthis_pill_style"></a>
+    	    	</div>
+    	    	<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=xa-51504f431ed8bf84"></script>
+    		<?php endif; ?>
+    		<?php if ($this->canEmailToFriend()): ?>
+        		<a href="<?php echo $this->helper('catalog/product')->getEmailToFriendUrl($_product) ?>">
+        			<img src="<?php echo $this->getSkinUrl('groupdeals/images/mail.png') ?>" height="17px" width="16px" /> <?php echo $this->__('Email to a Friend') ?>
+        		</a>
+    		<?php endif; ?>
+        </div>
+    </div>
+</div>

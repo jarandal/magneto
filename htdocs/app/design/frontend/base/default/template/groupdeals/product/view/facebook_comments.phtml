@@ -1,0 +1,9 @@
+<div class="facebook-section">
+	<?php
+		$url = $this->helper('core/url')->getCurrentUrl();
+		if ($pos = strpos($url, '?')) {
+			$url = substr($this->helper('core/url')->getCurrentUrl(), 0, $pos);
+		}
+	?>
+	<div class="fb-comments" data-href="<?php echo $url; ?>" data-num-posts="10"></div>
+</div>

@@ -1,0 +1,139 @@
+<?php
+    $_productCollection = $this->getLoadedProductCollection();
+    $_helper = $this->helper('catalog/output');
+    $_gdHelper = $this->helper('groupdeals');
+    $crcId = $this->getRequest()->getParam('crc');
+?>
+<div id="messages_deals_view"><?php echo $this->getMessagesBlock()->getGroupedHtml() ?></div>
+
+<?php if ($this->getCity()!=''): ?>
+	<div class="page-title category-title">
+			<h1><?php echo $this->__('%s - Current Deals', $this->__($this->getCity())) ?></h1> <a href="<?php echo $this->getUrl('groupdeals/product/recent', array('crc'=>$crcId)); ?>">(<?php echo $this->__('view recent deals') ?>)</a>
+	</div>
+<?php endif; ?>
+
+<?php if(!$_productCollection->count()): ?>
+	<p class="note-msg"><?php echo $this->__('There are no deals currently active.') ?></p>
+<?php else: ?>
+	<div class="gd-detailed-list">   
+	    <?php foreach ($_productCollection as $_product): ?>
+		    <?php $_groupdeal = $this->getGroupdeal($_product->getId()); ?>
+		    <div class="product-view gd-view">
+	    		<div class="product-essential">
+	       			<div class="product-name">
+		    			<h2>
+		    				<a href="<?php echo $_product->getProductUrl().'?crc='.$crcId; ?>" title="<?php echo $this->htmlEscape($_product->getName(), null, true) ?>">
+		    					<?php echo $_helper->productAttribute($_product, $_product->getName(), 'name') ?>
+		    				</a>
+		    			</h2>	
+		    		</div>		    		
+		    		<div class="gd-product-img-box">
+		    			<a href="<?php echo $_product->getProductUrl().'?crc='.$crcId; ?>" title="<?php echo $this->htmlEscape($this->getImageLabel($_product, 'small_image'), null, true) ?>" class="gd-product-image">
+		    				<img src="<?php echo $this->helper('catalog/image')->init($_product, 'small_image')->resize(700, 424); ?>" width="100%" height="100%" alt="<?php echo $this->htmlEscape($this->getImageLabel($_product, 'small_image'), null, true) ?>" />
+		    			</a>
+		    		</div>	
+		    		<div class="gd-product-shop <?php if ($_product->isVirtual() && $_gdHelper->allowGiveAsGift() && $_product->isSaleable()): ?>gd-gift<?php endif; ?>">
+						<div class="gd-product-shop-left">
+			    			<!-- add to/prices block -->
+			    			<div class="gd-add-to-box">
+								<div class="gd-buy">
+				            		<?php $specialPrice = $_gdHelper->getFormatedPrice($_product, $_product->getFinalPrice()); ?>
+			    					<div class="special-price <?php if (strlen(preg_replace( '/[^0-9]/', '', $specialPrice))>4): ?>small-price<?php endif; ?>"><?php echo $specialPrice; ?></div>
+			    					<div class="gd-add-to-cart">									
+							    		<button type="button" title="<?php echo $this->__('Add to Cart') ?>" class="gd-button<?php if(!$_product->isSaleable()): ?> disabled<?php endif; ?>" <?php if($_product->isSaleable()): ?>onclick="setLocation('<?php echo $this->getAddToCartUrl($_product) ?>')"<?php else: ?>disabled="disabled"<?php endif; ?>><?php if($_product->isSaleable()): ?><?php echo $this->__('Buy!'); ?><?php else: ?><?php echo $this->__('Ended'); ?><?php endif; ?></button>
+			    					</div>  				
+			    				</div>
+			    				<div class="gd-box">
+			    					<small><?php echo $this->__('Value') ?></small><br/>
+			    					<?php echo $_gdHelper->getFormatedPrice($_product, $_product->getPrice()); ?>
+			    				</div>
+			    				<div class="gd-box">
+			    					<small><?php echo $this->__('Discount') ?></small><br/>
+			    					<?php echo $this->getDiscountPercent($_product); ?>
+			    				</div>
+			    				<div class="gd-box">
+			    					<small><?php echo $this->__('You Save') ?></small><br/>
+			    					<?php echo $_gdHelper->getFormatedPrice($_product, ($_product->getPrice()-$_product->getFinalPrice())); ?>
+			    				</div>
+								<?php if ($_product->isVirtual() && $_gdHelper->allowGiveAsGift() && $_product->isSaleable()): ?>
+								<div class="give-as-gift">
+									<button type="button" title="<?php echo $this->__('Give as a Gift') ?>" class="gd-button" onclick="setLocation('<?php echo $this->getAddToCartUrl($_product,array('gift'=>1)) ?>');"><span><span><?php echo $this->__('Give as a Gift') ?></span></span></button>
+								</div>	
+								<?php endif; ?>
+			    			</div> 
+		    			</div> 
+		    			
+						<div class="gd-product-shop-right">
+			    			<!-- countdown block -->
+			    			<!-- if product isn't saleable set countdown to 00:00:00 -->
+			    			<?php $finished = ($_product->isSaleable()) ? false : true; ?>
+			    			<div class="countdown-box">
+			    				<small><?php echo $this->__('TIME LEFT TO BUY') ?></small>
+			    				<?php echo $_gdHelper->getCountdown($_product->getGroupdealDatetimeTo(), $_product->getId(), $finished); ?>
+			    			</div>	
+			    							
+			    			<!-- target block -->
+			    			<?php $soldQty = $this->getSoldQty($_groupdeal); ?> 
+							<?php $minimumQty = $_groupdeal->getMinimumQty(); ?>			
+							<?php if ($minimumQty>0): ?>
+							    <?php $progressBarWidth = number_format(100*$soldQty/$minimumQty,0); ?> 
+							    <div class="progress_bar">
+							    	<h2><?php echo $this->__('%s bought', $soldQty); ?></h2>
+							    	<?php if ($_product->isSaleable()): ?>
+							            <?php if ($soldQty<$minimumQty): ?>
+							    			<div class="progress_bar_bottom">
+							                    <?php if ($soldQty!=0): ?>
+							                    <div class="progress_bar_marker" style="width:<?php echo $progressBarWidth; ?>%;">
+							                        <img src="<?php echo $this->getSkinUrl('groupdeals/images/arrow.png') ?>" />    
+							                    </div>
+							    				<div class="progress_bar_top" style="width:<?php echo $progressBarWidth; ?>%;"></div><br/>
+							                    <?php endif; ?>
+							    			</div>
+							    			<div class="qtys"><div class="left">0</div><div class="right"><?php echo $minimumQty; ?></div></div>
+							    			<div class="clearer"></div>
+							    			<i><?php echo $this->__('%s more needed to get the deal', $minimumQty-$soldQty); ?></i>
+							    		<?php else: ?>
+							    			<div class="cross-check"><img src="<?php echo $this->getSkinUrl('groupdeals/images/check.png') ?>" alt="check"/><?php echo $this->__('The deal is on!') ?></div>
+							    			<div class="clearer"></div>						
+							    			<i><?php echo $this->__('Tipped at %s with %s bought', $this->getTippingTime($_groupdeal), $minimumQty); ?></i>
+							    		<?php endif; ?>
+							    	<?php else: ?>		
+							    		<?php if ($soldQty>=$minimumQty): ?>
+							    			<div class="cross-check"><img src="<?php echo $this->getSkinUrl('groupdeals/images/check.png') ?>" alt="check"/><?php echo $this->__('The deal is over.') ?></div>
+							    			<i><?php echo $this->__('Tipped at %s with %s bought', $this->getTippingTime($_groupdeal), $minimumQty); ?></i>
+							    		<?php else: ?>
+							    			<div class="cross-check"><img src="<?php echo $this->getSkinUrl('groupdeals/images/cross.png') ?>" alt="cross"/><?php echo $this->__('The deal is over.') ?></div>
+							    			<i><?php echo $this->__('The deal\'s target wasn\'t met.') ?></i>
+							    		<?php endif; ?>
+							    	<?php endif; ?>
+							    </div>
+							<?php elseif ($_product->isSaleable()): ?>
+							    <div class="progress_bar progress_bar_padding">
+							    	<?php if ($soldQty>0): ?>
+							    		<h2><?php echo $this->__('%s bought', $soldQty); ?></h2>
+							    	<?php endif; ?>
+							    	<div class="cross-check"><img src="<?php echo $this->getSkinUrl('groupdeals/images/check.png') ?>" alt="check"/><?php echo $this->__('The deal is on!') ?></div>
+							    </div>
+							<?php else: ?>
+							    <div class="progress_bar progress_bar_padding">
+							    	<h2><?php echo $this->__('%s bought', $soldQty); ?></h2>
+							    	<div class="cross-check"><img src="<?php echo $this->getSkinUrl('groupdeals/images/check.png') ?>" alt="check"/><?php echo $this->__('The deal is over.') ?></div>
+							    </div>
+							<?php endif; ?>   							
+		    			</div>	
+		    		</div>	
+		    		<div class="gd-product-details">
+						<div class="details-box">
+							<h3><?php echo $this->__('The Fine Print'); ?></h3>
+							<?php echo $this->helper('catalog/output')->productAttribute($this->getProduct(), $_product->getGroupdealFineprint(), 'groupdeal_fineprint') ?>
+						</div>
+						<div class="details-box">
+							<h3><?php echo $this->__('Highlights'); ?></h3>
+							<?php echo $this->helper('catalog/output')->productAttribute($this->getProduct(), $_product->getGroupdealHighlights(), 'groupdeal_highlights') ?>
+						</div>  
+					</div>  
+		    	</div>
+		    </div>
+		<?php endforeach ?>
+	</div>
+<?php endif; ?>

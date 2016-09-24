@@ -1,0 +1,30 @@
+<?php if($this->canShowBlock()): ?>
+<div class="block" id="groupdeals-category-nav-block">
+    <div class="block-title">
+        <strong><span><?php echo $this->__('Shop By') ?></span></strong>
+    </div>
+    <div class="block-content">
+        <dl id="narrow-by-list">
+        	<dt><?php echo $this->__('Category') ?></dt>
+        	<dd id="groupdeals-category-nav">
+	            <ol>	                    	
+		            <?php echo $this->getItemsHtml(); ?>
+		        </ol>
+		    </dd>
+        </dl>
+        <script type="text/javascript">decorateDataList('narrow-by-list')</script>
+    </div>
+</div>
+<script type="text/javascript">
+<?php if ($categories = $this->selected()): ?>
+	var catIds = '<?php echo $categories; ?>'.split(",");
+	$(catIds).each(function(catId){
+	    $('category-nav-'+catId).checked = true;
+	});
+<?php endif; ?>
+
+function addCategoryToFilter(url) {
+	window.location = url;
+}
+</script>
+<?php endif; ?>

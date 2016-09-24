@@ -36,7 +36,8 @@ function codeAddress(address, letter, imagesPath) {
 			    marker.loadXML(data);
 			}
         } else {
-            alert("Geocode was not successful for the following reason: " + status);
+			//20160924 JAL: Omitimos todos los errores de geocode
+            //alert("Geocode was not successful for the following reason: " + status);
         }
     });
 }

@@ -1,0 +1,71 @@
+<?php if (Mage::helper('groupdeals')->isEnabled()): ?>
+<?php $cityCollection = $this->getCityCollection(null, $this->getProductIds()); ?>
+<?php if (count($cityCollection)>0 && $this->allowSubscribePopup()): ?>	
+	<!-- groupdeals subscriptions popup -->
+	<div id="gd-subscriptions-popup-container" class="gd-popup-container" onclick="subscribePopup.hidePopup();">
+		<div id="gd-subscriptions-popup-content" class="gd-popup-content" onclick="subscribePopup.runHidePopup = false;">
+			<div class="close-corner">
+			    <a href="javascript:void(0)" onClick="subscribePopup.hidePopup();"><?php echo $this->__('(x) close'); ?></a>
+			</div>
+			<div class="gd-page-title">
+			    <h2><?php echo $this->__('Subscribe to our deals!') ?></h2>
+			    <p><?php echo $this->__('Subscribe to receive updates whenever a new deal is posted, when it reaches it\'s target or when it\'s over.') ?></p>
+			</div>
+			<form action="<?php echo $this->getUrl('groupdeals/subscriber/subscribe/') ?>" method="post" id="gd-subscriptions-popup">
+			    <ul class="form-list">
+			    	<li>
+			    		<label class="required" for="city"><em>*</em><?php echo $this->__('City') ?></label>
+			    		<div class="input-box">
+			    			<select class="required-entry" name="city" id="city" >
+			    				<?php foreach ($cityCollection as $city): ?>
+			    					<option value="<?php echo $city ?>"><?php echo $this->__($city) ?></option>
+			    				<?php endforeach; ?>
+			    			</select> 
+			    		</div>
+			    	</li>
+			    	<li>
+		                <label class="required" for="email_address"><em>*</em><?php echo $this->__('Email Address') ?></label>
+		                <div class="input-box">
+		                    <input type="text" class="input-text validate-email required-entry" title="Email Address" value="" id="email_address" name="email">
+		                </div>
+		            </li>
+			    </ul>
+			    <div class="actions">
+			    	<span class="close" onclick="subscribePopup.hidePopup();" ><?php echo $this->__('Already Subscribed?') ?></span>
+			    	<button type="button" title="<?php echo $this->__('Subscribe') ?>" class="button" onclick="gdSubscriberPopupForm.submit(this)"><span><span><?php echo $this->__('Subscribe') ?></span></span></button>
+			    </div>
+			</form>
+		</div>
+	</div>
+	<script language='javascript'>
+	//<![CDATA[
+		var gdSubscriberPopupForm = new VarienForm('gd-subscriptions-popup');
+		gdSubscriberPopupForm.submit = function(button, url) {
+	        if (this.validator.validate()) {
+				jQueryGD(button).replaceWith(subscribePopup.ajaxCartLoadingHtml); 
+				//add timeout so that the loader can display properly on all devices
+				var self = this;
+				setTimeout(function() { self.form.submit(); }, 100);
+	        }
+	        return false;
+	    }.bind(gdSubscriberPopupForm);		
+		
+		var subscribePopup = new Popup('gd-subscriptions', false);
+			subscribePopup.isMobile = <?php echo var_export(Mage::helper('groupdeals')->isMobile(), true); ?>;
+			subscribePopup.isTablet = <?php echo var_export(Mage::helper('groupdeals')->isTablet(), true); ?>;
+			subscribePopup.ajaxCartLoadingHtml = '<span id="ajax-cart-please-wait" class="please-wait" ><img src="<?php echo $this->getSkinUrl('groupdeals/images/ajax-loader.gif'); ?>" alt="<?php echo $this->__('Please wait...'); ?>" title="<?php echo $this->__('Please wait...'); ?>" class="v-middle" /><span><?php echo $this->__('Please wait...'); ?></span></span>';
+			
+		<?php if (!Mage::getModel('core/cookie')->get('popup-subscribe')): ?>
+			<?php 
+				if (Mage::getStoreConfig('groupdeals/configuration/homepage_deals')=='default' || (Mage::getStoreConfig('groupdeals/configuration/homepage_deals')!='default' && Mage::app()->getRequest()->getModuleName()!='cms' && Mage::app()->getRequest()->getControllerName()!='index' && Mage::app()->getRequest()->getActionName()!='index')) {
+					Mage::getModel('core/cookie')->set('popup-subscribe', true, 86400); 
+				}
+			?>
+			Event.observe(window, 'load', function() {
+				setTimeout(function() { subscribePopup.showPopup(false); }, 300);
+			});
+		<?php endif; ?>
+	//]]>
+	</script>
+<?php endif; ?>
+<?php endif; ?>

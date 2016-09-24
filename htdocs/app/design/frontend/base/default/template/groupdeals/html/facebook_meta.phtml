@@ -1,0 +1,26 @@
+<?php if (Mage::getModel('groupdeals/facebook_config')->isEnabled() && (Mage::getStoreConfigFlag('groupdeals/facebook_connect/enable_facebook_like') || Mage::getStoreConfigFlag('groupdeals/facebook_connect/enable_facebook_comments'))): ?>	
+	<?php
+		$product = Mage::registry('current_product');
+		if ($product):
+			$url = $this->helper('core/url')->getCurrentUrl();
+			if ($pos = strpos($url, '?')) {
+				$url = substr($this->helper('core/url')->getCurrentUrl(), 0, $pos);
+			}
+			$description = strip_tags($this->helper('catalog/output')->productAttribute($product, $product->getGroupdealHighlights(), 'groupdeal_highlights'));
+	?>
+		<meta property="og:title" content="<?php echo trim($product->getName()); ?>"/>
+		<meta property="og:url" content="<?php echo $url; ?>"/>
+		<meta property="og:type" content="product"/>
+		<meta property="og:image" content="<?php echo $this->helper('catalog/image')->init($product, 'image')->resize(300, 300) ;?>"/>
+		<meta property="og:description" content="<?php echo $description; ?>"/>
+		<meta property="fb:app_id" content="<?php echo $this->getApiKey() ?>"/>
+		<script type="text/javascript">  
+		//<![CDATA[
+			Event.observe(window, 'load', function() { 	
+				document.getElementsByTagName('html')[0].setAttribute("xmlns:og","http://ogp.me/ns#");
+				document.getElementsByTagName('html')[0].setAttribute("xmlns:fb","http://www.facebook.com/2008/fbml");
+			});
+		//]]>
+		</script>
+	<?php endif; ?>
+<?php endif; ?>

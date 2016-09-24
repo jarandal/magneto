@@ -1,0 +1,79 @@
+<?php
+    $_product = $this->getProduct();
+    $_helper = $this->helper('catalog/output');
+	$slideshowEffect = Mage::getStoreConfig('groupdeals/configuration/slideshow_effect');
+	if ($slideshowEffect=='kb' && $this->helper('groupdeals')->isIE()) {
+		$slideshowEffect = 'swipe';
+	}
+?>
+<?php if (count($this->getGalleryImages()) > 1): ?>
+	<?php if ($this->helper('groupdeals')->displayInIe()): ?>
+		<script type="text/javascript" src="<?php echo $this->getSkinUrl('groupdeals/rs-plugin/js/jquery.themepunch.plugins.min.js') ?>"></script>
+		<script type="text/javascript" src="<?php echo $this->getSkinUrl('groupdeals/rs-plugin/js/jquery.themepunch.revolution.js') ?>"></script>
+		<link rel="stylesheet" href="<?php echo $this->getSkinUrl('groupdeals/rs-plugin/css/settings.css'); ?>" />
+		<div class="tp-banner-container">
+			<div class="tp-banner" >
+				<ul>
+					<?php $i = 0; foreach ($this->getGalleryImages() as $_image): $i++; ?>
+						<?php $_imageUrl = $this->helper('catalog/image')
+				                                  ->init($_product, 'image', $_image->getFile())
+				                                  // ->keepFrame(false)
+				                                  // ->constrainOnly(true)
+				                                  ->resize(700, 424);
+				        ?>
+						<li data-transition="<?php if ($slideshowEffect=='kb'): ?>fade<?php else: ?>slidehorizontal<?php endif; ?>" data-masterspeed="1000" data-thumb="<?php echo $_imageUrl; ?>">
+							<img src="<?php echo $_imageUrl; ?>" style="display:none" alt="<?php echo $this->htmlEscape($_image->getLabel()) ?>" data-bgposition="left bottom" <?php if ($slideshowEffect=='kb'): ?>data-kenburns="on" data-bgfit="100"<?php endif; ?> data-duration="6000" data-ease="easeInOutQuad" data-bgfitend="110" data-bgpositionend="center top">
+					    </li>
+				    <?php endforeach; ?>	
+				</ul>
+			</div>
+		</div>
+		<script type="text/javascript">  
+		//<![CDATA[
+			jQueryGD(document).ready(function() {
+			   jQueryGD('.tp-banner').revolution(
+				{
+					delay:5000,
+					startwidth:700,
+					// startheight:730,
+					startheight:400,
+					hideThumbs:10,
+					autoHeight:"on",
+							
+					navigationType:"thumb",
+					navigationArrows:'nexttobullets',
+					soloArrowLeftHOffset:"0",
+					soloArrowRightHOffset:"0",
+					onHoverStop:'on',
+					// navigationStyle:"preview4",
+					thumbAmount: <?php echo ($i>=4) ? 4 : $i; ?>,
+					hideArrowsOnMobile:"on",
+					hideThumbsOnMobile:"on"
+				});
+			});
+		//]]>
+		</script>
+	<?php else: ?>
+		<?php $_image = $this->getGalleryImages()->getFirstItem(); ?>
+		<img src="<?php echo $this->helper('catalog/image')->init($this->getProduct(), 'image', $_image->getFile())->resize(700, 424); ?>" width="100%" alt="<?php echo $this->htmlEscape($_image->getLabel()) ?>" />
+		<?php $i = 0; foreach ($this->getGalleryImages() as $_image): $i++; ?>
+			<?php $_imageUrl = $this->helper('catalog/image')
+	                                  ->init($_product, 'image', $_image->getFile())
+	                                  // ->keepFrame(false)
+	                                  // ->constrainOnly(true)
+	                                  ->resize(75, 75);
+	        ?>
+	    	<a class="ie-image" href="javascript:popWin('<?php echo $this->getGalleryUrl($_image) ?>', 'gallery', 'width=410,height=300,left=0,top=0,location=no,status=yes,scrollbars=yes,resizable=yes');" title="<?php echo $this->htmlEscape($_image->getLabel()) ?>">
+				<img src="<?php echo $_imageUrl; ?>" alt="<?php echo $this->htmlEscape($_image->getLabel()) ?>">
+			</a>
+	    <?php endforeach; ?>
+	<?php endif; ?>
+<?php elseif (count($this->getGalleryImages()) == 1): ?>
+	<?php $_image = $this->getGalleryImages()->getFirstItem(); ?>
+	<img src="<?php echo $this->helper('catalog/image')->init($this->getProduct(), 'image', $_image->getFile())->resize(700, 424); ?>" width="100%" alt="<?php echo $this->htmlEscape($_image->getLabel()) ?>" />
+<?php else: ?>
+    <?php
+        $_img = '<img id="image" src="'.$this->helper('catalog/image')->init($_product, 'image')->resize(700, 424).'" width="100%" alt="'.$this->htmlEscape($this->getImageLabel()).'" title="'.$this->htmlEscape($this->getImageLabel()).'" />';
+        echo $_helper->productAttribute($_product, $_img, 'image');
+    ?>
+<?php endif; ?>
