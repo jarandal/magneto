@@ -68,7 +68,15 @@ lib/PEAR/
 lib/Pelago/
 lib/phpseclib/
 lib/Varien/
-lib/Zend/
+
+#JAL designoracion recursiva
+/lib/Zend/**
+!/lib/Zend/Currency.php
+!/lib/Zend/Locale/
+!/lib/Zend/Locale/**
+!/lib/Zend/Locale/Data/
+!/lib/Zend/Locale/Data/**
+
 lib/Cm/
 lib/Credis/
 lib/Magento/
