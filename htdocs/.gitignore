@@ -194,3 +194,6 @@ fabric.properties
 # modules.xml
 # .idea/misc.xml 
 # *.ipr
+
+#JAL sass
+.sass-cache
